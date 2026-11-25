@@ -13369,3 +13369,16 @@ partir, réponse en erreur) : vu échouer avant le code (4 échecs sur 6). Suite
 audit sans erreur, navigateur 2892/2892 (`--workers 3`).
 Vu sur la capture d'écran : la ligne collait au bouton « Informations » ; même écart que sous la marque (10 px), contrôles
 de mise en page et de contraste rejoués (77/77).
+
+### Signature : logo AM.31 aux couleurs de l'appli — 25/11/2026
+
+Suite de la mention du même jour (choix d'Antoni : variante C d'une maquette, texte centré). Le groupe « À propos » des Données porte,
+sous la marque, le logo AM.31 (34 px de haut), « Fait par AntoniMan31/Claude Code » (le nom à l'accent) et « version a1b2c3d ·
+jj/mm/aaaa » en petit. Le logo est en trois calques (contour, remplissage, reflets) que le CSS colore avec `--accent`, mêlé de noir ou de
+blanc : il suit donc le cycle de couleurs par onglet et le thème. Les masques sont intégrés à la page comme le logo VI (une page, aucun
+fichier de plus, hors ligne garanti) : 25 083 octets de plus, 713 314 → 738 397. Un double appui (vrai bouton de 48 px, `appuiLogoAm31`) alterne l'accent et
+le bleu d'origine (`--logo-contour`, `--logo-remplissage`) ; rien n'est mémorisé, pas de lien GitHub (choix d'Antoni). Le double appui se
+compte à la main (deux appuis de moins de 350 ms) : `dblclick` n'existe pas au clavier. `ligneVersion` devient `versionTexte`. Le nom du
+cache du service worker passe à v158. Contrôle `test_mention_et_version` (22 contrôles) vu échouer avant le code (6 échecs, plus 2 pour
+le titre). Le groupe « Version de l'app » des Réglages, qui ne contenait que « Recharger l'app », devient « Application » : la version est
+dans « À propos » (choix d'Antoni). Le rayon du logo passe par l'échelle (`--r-md`, un contrôle du pipeline refusait 12 px en dur).
