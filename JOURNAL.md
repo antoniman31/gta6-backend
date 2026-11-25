@@ -13382,3 +13382,7 @@ compte à la main (deux appuis de moins de 350 ms) : `dblclick` n'existe pas au 
 cache du service worker passe à v158. Contrôle `test_mention_et_version` (22 contrôles) vu échouer avant le code (6 échecs, plus 2 pour
 le titre). Le groupe « Version de l'app » des Réglages, qui ne contenait que « Recharger l'app », devient « Application » : la version est
 dans « À propos » (choix d'Antoni). Le rayon du logo passe par l'échelle (`--r-md`, un contrôle du pipeline refusait 12 px en dur).
+
+### Règles communes mises à jour — 25/11/2026
+
+Bloc commun de `CLAUDE.md` aligné sur `regles-communes` (BLOC.md, commit 8e4cde6), par la propagation automatique.
