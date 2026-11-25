@@ -13367,3 +13367,5 @@ identifiant hexadécimal, une date) ; hors ligne ou en erreur : « version incon
 `test_mention_et_version` (fuseau du navigateur à New York pour prouver l'heure de Paris, jeton présent qui ne doit pas
 partir, réponse en erreur) : vu échouer avant le code (4 échecs sur 6). Suites : pipeline 2437/2437, sources synchronisées,
 audit sans erreur, navigateur 2892/2892 (`--workers 3`).
+Vu sur la capture d'écran : la ligne collait au bouton « Informations » ; même écart que sous la marque (10 px), contrôles
+de mise en page et de contraste rejoués (77/77).
