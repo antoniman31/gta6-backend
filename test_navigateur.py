@@ -9068,8 +9068,8 @@ def test_mention_et_version(nav, url):
     import json as _json
     for reponse, attendu in (
         ({"status": 200, "body": _json.dumps([{"sha": "a1b2c3d4e5f60718", "commit": {"committer": {"date": "2026-12-31T23:30:00Z"}}}])},
-         "Fait par AntoniMan31/Claude Code · version a1b2c3d du 01/01/2027"),
-        ({"status": 503, "body": "{}"}, "Fait par AntoniMan31/Claude Code · version inconnue"),
+         "version a1b2c3d · 01/01/2027"),
+        ({"status": 503, "body": "{}"}, "version inconnue"),
     ):
         ctx = nav.new_context(viewport={"width": 390, "height": 800}, timezone_id="America/New_York")
         page = ctx.new_page()
@@ -9085,7 +9085,28 @@ def test_mention_et_version(nav, url):
         page.evaluate("() => { storageSet(TOKEN_STORAGE_KEY, 'jeton-de-test'); openSettings(); ongletParam('adv'); }")
         page.wait_for_timeout(400)
         texte = page.evaluate("() => { const e = document.getElementById('mentionVersion'); return e ? e.textContent.trim() : null; }")
-        check(texte == attendu, "[mention] À propos affiche « %s » (lu : %s)" % (attendu, texte))
+        check(texte == attendu, "[mention] la version affiche « %s » (lu : %s)" % (attendu, texte))
+        # La signature (règle commune « Interface », 25/11/2026) : le logo AM.31 en vrai bouton de 48 px, la mention exacte au-dessus de
+        # la version ; un double clic alterne la couleur de l'appli et le bleu d'origine, un seul appui ne change rien.
+        mention = page.evaluate("() => { const e = document.querySelector('.signature__texte'); return e ? e.textContent.trim() : null; }")
+        check(mention == "Fait par AntoniMan31/Claude Code", "[mention] la mention exacte est au-dessus de la version (lu : %s)" % mention)
+        # L'ancien groupe « Version de l'app » ne montrait pas de version, seulement « Recharger l'app » : il porte le titre « Application ».
+        titres = page.evaluate("() => [...document.querySelectorAll('#settingsOverlay .setting-label')].map(e => e.textContent.trim().replace(/\?$/, ''))")
+        check("Application" in titres and "Version de l'app" not in titres, "[mention] le groupe du rechargement s'appelle « Application » (titres : %s)" % titres)
+        logo = page.locator("button.am31")
+        check(logo.count() == 1, "[mention] le logo AM.31 est un bouton")
+        if logo.count() == 1:
+            boite = logo.bounding_box()
+            check(boite and boite["height"] >= 47.5 and boite["width"] >= 47.5, "[mention] le logo se touche au doigt (%s)" % boite)
+            check(logo.get_attribute("data-couleur") == "app", "[mention] le logo part à la couleur de l'appli")
+            logo.click()
+            check(logo.get_attribute("data-couleur") == "app", "[mention] un seul appui ne change rien")
+            page.wait_for_timeout(450)
+            logo.dblclick()
+            check(logo.get_attribute("data-couleur") == "origine", "[mention] un double clic passe au bleu d'origine")
+            page.wait_for_timeout(450)
+            logo.dblclick()
+            check(logo.get_attribute("data-couleur") == "app", "[mention] un second double clic revient à la couleur de l'appli")
         lus = [d for d in demandes if "/commits" in d[0]]
         check(len(lus) == 1 and ("path=docs/index.html" in lus[0][0] or "path=docs%2Findex.html" in lus[0][0]),
               "[mention] une seule demande, sur le dernier commit de docs/index.html (%s)" % lus)

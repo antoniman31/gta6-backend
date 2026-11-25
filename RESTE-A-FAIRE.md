@@ -128,8 +128,9 @@ rebours qui bat ; jauges « lus par source » des Stats (orange plus foncé en c
 
 ## 5 sexies. Mention et version (25/11/2026) : à regarder sur le S26
 
-Réglages › Données › À propos : « Fait par AntoniMan31/Claude Code · version … du … », le dernier commit de la page lu sur
-GitHub à l'ouverture de l'onglet. Hors ligne, ou si GitHub limite (60 demandes par heure sans jeton) : « version inconnue ».
+Réglages › Données › À propos : le logo AM.31 (à l'accent du moment), « Fait par AntoniMan31/Claude Code » et « version … · jj/mm/aaaa »,
+le dernier commit de la page lu sur GitHub à l'ouverture de l'onglet. Double appui sur le logo : bleu d'origine, puis retour. Hors
+ligne, ou si GitHub limite (60 demandes par heure sans jeton) : « version inconnue ».
 
 ## 6. Mémos
 
