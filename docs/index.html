@@ -4149,8 +4149,7 @@ function toggleDensity(){
   settings.denseMode = !settings.denseMode;
   applyDensity();
   updateActiveFiltersCount();
-  try{ storageSet("settings-v1", JSON.stringify(settings)); }
-  catch(e){ console.error("Erreur sauvegarde du mode d'affichage", e); }
+  sauveReglages();
 }
 function applyDensity(){
   document.getElementById("feed").classList.toggle("dense", settings.denseMode);
@@ -4366,9 +4365,18 @@ function appliqueCouleursZones(maintenant){
   h.toggle("bordures-tete", familleActive("bord", maintenant) && zoneActive("bord", "tete"));
   h.toggle("bordures-fil", familleActive("bord", maintenant) && zoneActive("bord", "fil"));
 }
-function sauveReglages(erreur){
-  try{ storageSet("settings-v1", JSON.stringify(settings)); }
-  catch(e){ console.error(erreur, e); }
+// LA SEULE ÉCRITURE DES RÉGLAGES (25/11/2026). storageSet() ne lève jamais d'erreur, il rend false : les dix écritures
+// l'entouraient d'un try/catch qui ne se déclenchait donc jamais, y compris les deux toasts prévus (vue Rockstar, photo de
+// fond). Un stockage plein faisait perdre les réglages au rechargement sans rien dire (règle commune « Robustesse »).
+// Un toast au plus tant que le stockage reste plein (pas de rafale à chaque case cochée) ; un enregistrement réussi
+// réarme le signal. Le drapeau vit sur la fonction, hissée : aucun « let » lu avant sa déclaration.
+function sauveReglages(){
+  if(storageSet("settings-v1", JSON.stringify(settings))){ sauveReglages.signale = false; return true; }
+  if(!sauveReglages.signale && typeof montreToast === "function"){
+    sauveReglages.signale = true;
+    montreToast("Réglage non enregistré, le stockage de l'appareil a refusé l'écriture : libère de la place, puis réessaie.");
+  }
+  return false;
 }
 // Écrit ICI et nulle part ailleurs : une famille cochée d'office ne devient pas un « true » parce qu'un autre champ a été enregistré.
 function basculeCouleurFamille(f, actif){
@@ -4380,7 +4388,7 @@ function basculeCouleurFamille(f, actif){
   }
   if(f === "bord"){ basculeEffet("coulBordures", actif); return; }
   settings.coulTypes = Object.assign({}, settings.coulTypes, { [f]: !!actif });
-  sauveReglages("Erreur sauvegarde de la famille " + f);
+  sauveReglages();
   appliqueEffetsJourJ(new Date());
   majReglagesEffets();
   requestAnimationFrame(syncCycle);
@@ -4389,7 +4397,7 @@ function basculeZone(f, z, actif){
   const zones = Object.assign({}, settings.coulZones);
   if(actif) delete zones[f + ":" + z]; else zones[f + ":" + z] = false;
   settings.coulZones = zones;
-  sauveReglages("Erreur sauvegarde de la zone " + f + ":" + z);
+  sauveReglages();
   appliqueEffetsJourJ(new Date());
   majReglagesEffets();
   requestAnimationFrame(syncCycle);
@@ -4406,7 +4414,7 @@ function basculeZoneChip(f, z, veut){
     settings.coulZones = zones;
     if(f === "bord") settings.coulBordures = true;
     else settings.coulTypes = Object.assign({}, settings.coulTypes, { [f]: true });
-    sauveReglages("Erreur sauvegarde de la zone " + f + ":" + z);
+    sauveReglages();
     appliqueEffetsJourJ(now);
     majReglagesEffets();
     requestAnimationFrame(syncCycle);
@@ -4435,8 +4443,7 @@ function appliqueEffetsJourJ(maintenant){
 // devenir un « true » explicite parce qu'un autre champ a été enregistré.
 function basculeEffet(cle, actif){
   settings[cle] = !!actif;
-  try{ storageSet("settings-v1", JSON.stringify(settings)); }
-  catch(e){ console.error("Erreur sauvegarde de l'effet " + cle, e); }
+  sauveReglages();
   appliqueEffetsJourJ(new Date());
   majReglagesEffets();
   requestAnimationFrame(syncCycle);
@@ -4597,8 +4604,7 @@ function appliquePrereglage(nom){
   for(const cle of EFFETS_JOUR_J) settings[cle] = p[cle];
   settings.coulTypes = Object.assign({}, p.types);
   settings.coulZones = {};
-  try{ storageSet("settings-v1", JSON.stringify(settings)); }
-  catch(e){ console.error("Erreur sauvegarde du préréglage " + nom, e); }
+  sauveReglages();
   appliqueEffetsJourJ(new Date());
   majCasesEffets();
   requestAnimationFrame(syncCycle);
@@ -4639,8 +4645,7 @@ function appliqueRayonCadre(){
 }
 function reglerRayonCadre(v){
   settings.rayonCadre = Number(v);
-  try{ storageSet("settings-v1", JSON.stringify(settings)); }
-  catch(e){ console.error("Erreur sauvegarde du rayon du cadre", e); }
+  sauveReglages();
   appliqueRayonCadre();
   // Le cadre s'affiche pendant le réglage, même case décochée : on règle ce qu'on voit.
   const h = document.documentElement.classList;
@@ -4886,8 +4891,7 @@ document.addEventListener("animationstart", e => {
 // devenir un « true » explicite parce qu'un autre champ a été enregistré.
 function basculeCycleCouleurs(actif){
   settings.cycleCouleurs = !!actif;
-  try{ storageSet("settings-v1", JSON.stringify(settings)); }
-  catch(e){ console.error("Erreur sauvegarde cycle de couleurs", e); }
+  sauveReglages();
   appliqueEffetsJourJ(new Date());
   majReglagesEffets();
   requestAnimationFrame(syncCycle);
@@ -4921,8 +4925,7 @@ async function saveSettings(){
     return Object.assign({}, f, { enabled: cb ? cb.checked : f.enabled });
   });
 
-  try{ storageSet("settings-v1", JSON.stringify(settings)); }
-  catch(e){ console.error("Erreur sauvegarde paramètres", e); }
+  sauveReglages();
 
   updateSourcesLine();
   updateFooterNote();
@@ -5529,7 +5532,7 @@ async function importerSauvegarde(champ){
     vusDepuis = d.vus_depuis;
     try{ storageSet(CLE_VUS_DEPUIS, String(vusDepuis)); }catch(e){}
   }
-  storageSet("settings-v1", JSON.stringify(settings));
+  sauveReglages();
   await saveRead();
   saveCotes();
   await saveSeen();
@@ -5548,7 +5551,7 @@ async function resetSettings(){
     "Tout réinitialiser");
   if(!ok) return;
   settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
-  storageSet("settings-v1", JSON.stringify(settings));
+  sauveReglages();
   populateSettingsUI();
   applyTheme();
   updateSourcesLine();
@@ -7946,11 +7949,7 @@ function majBoutonVue(){
 function basculeVueRockstar(){
   settings.rockstarCartes = settings.rockstarCartes !== true;
   // Une écriture qui peut échouer se voit à l'écran (règle commune) : le choix reste valable pour la session même si le stockage refuse.
-  try{ storageSet("settings-v1", JSON.stringify(settings)); }
-  catch(e){
-    console.error("Erreur sauvegarde de la vue Rockstar", e);
-    if(typeof montreToast === "function") montreToast("Choix non enregistré, le stockage de l'appareil a refusé l'écriture : libère de la place, puis réessaie.");
-  }
+  sauveReglages();
   majBoutonVue();
   visibleCount = PAGE_SIZE;
   applyFilters();
@@ -10387,11 +10386,7 @@ function appliquePhotoFond(){
   if(val) val.textContent = v;
 }
 function sauvePhotoFond(){
-  try{ storageSet("settings-v1", JSON.stringify(settings)); }
-  catch(e){
-    console.error("Erreur sauvegarde de la photo de fond", e);
-    if(typeof montreToast === "function") montreToast("Réglage non enregistré, le stockage de l'appareil a refusé l'écriture : libère de la place, puis réessaie.");
-  }
+  sauveReglages();
 }
 function basculePhotoFond(v){
   settings.photoFond = v === true;
@@ -10405,8 +10400,7 @@ function reglerPhotoVoile(v){
 }
 function basculeFriseJalons(v){
   settings.friseJalons = !!v;
-  try{ storageSet("settings-v1", JSON.stringify(settings)); }
-  catch(e){ console.error("Erreur sauvegarde de la frise des jalons", e); }
+  sauveReglages();
   updateCountdown();
 }
 

@@ -5693,7 +5693,10 @@ def test_les_messages_derreur_disent_quoi_faire():
     check(sans == [], "chaque raison d'un import refusé dit quoi faire (sans action : %s)" % sans)
     toasts = re.findall(r'montreToast\("([^"]*refusé l\'écriture[^"]*)"\)', html)
     jeton = re.findall(r'setTokenStatus\("([^"]*stockage[^"]*)", "warn"\)', html)
-    check(len(toasts) == 2 and len(jeton) == 1, "les deux toasts de stockage et le message du jeton sont trouvés")
+    # 25/11/2026 : les deux toasts n'en font plus qu'un, dans sauveReglages(), seule écriture des réglages.
+    check(len(toasts) == 1 and len(jeton) == 1, "le toast de stockage et le message du jeton sont trouvés")
+    check(html.count('storageSet("settings-v1"') == 1 and "function sauveReglages(){\n  if(storageSet(\"settings-v1\"" in html,
+          "les réglages ne s'écrivent que par sauveReglages(), qui teste le retour de storageSet (il ne lève jamais d'erreur)")
     check(all(re.search(r"\S : \S.*(libère|réessaie)", m) for m in toasts + jeton),
           "un enregistrement refusé par le stockage dit quoi faire (%s)" % (toasts + jeton))
 

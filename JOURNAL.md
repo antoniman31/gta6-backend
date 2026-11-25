@@ -13339,3 +13339,15 @@ le fichier créé par « Exporter » de GTA6 Watch. », « libère de la place, 
 recharger la page). Les « indisponible » qui portent un bouton « Réessayer » et le journal (outil technique) restent tels
 quels. Contrôle `test_les_messages_derreur_disent_quoi_faire` (vu échouer sur les anciens textes). Repéré, non corrigé :
 `sauveReglages` ne montre pas son échec à l'écran (noté dans `RESTE-A-FAIRE.md`). `docs/sw.js` : v154 → v155.
+
+### Un réglage refusé par le stockage se voit — 25/11/2026
+
+Repéré pendant la revue des messages d'erreur. `storageSet()` ne lève jamais d'erreur, il rend `false` : les **dix** écritures
+des réglages l'entouraient d'un `try/catch` qui ne se déclenchait donc jamais, y compris les deux qui prévoyaient un toast (vue
+Rockstar, photo de fond) ; l'import d'une sauvegarde et la remise à zéro écrivaient sans regarder le résultat. Un stockage
+plein faisait perdre les réglages au rechargement sans rien dire (règle commune « Robustesse »). Les douze passent désormais
+par `sauveReglages()`, qui teste le retour et montre « Réglage non enregistré… : libère de la place, puis réessaie. » une
+fois tant que le stockage reste plein ; un enregistrement réussi réarme le signal (drapeau porté par la fonction, hissée :
+pas de `let` lu avant sa déclaration). Contrôle navigateur `test_reglage_non_enregistre_se_voit` (stockage plein simulé :
+vu échouer sur l'ancien code, 1/3) ; `test_pipeline` vérifie que les réglages ne s'écrivent plus qu'à cet endroit.
+`docs/sw.js` : v155 → v156.
